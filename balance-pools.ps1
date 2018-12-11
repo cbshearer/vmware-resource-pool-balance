@@ -143,6 +143,7 @@ Function Update-all-pools {
 
 Function Update-one-pool {
 
+    $cluster = $null
     $input = Read-Host "Please enter the name of the resource pool"
     $resourcepool = get-vapp $input
 
