@@ -33,7 +33,7 @@ Function Select-size {
                              $script:RAM_shares = 10}                            
                         'L' {$script:CPU_shares = 500
                              $script:RAM_shares = 5}
-                        'E' {main-menu}
+                        'A' {main-menu}
                         'Q' {exit}
                         default {Select-size}
                         }
