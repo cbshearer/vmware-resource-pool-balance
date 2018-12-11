@@ -8,8 +8,8 @@ Function Select-size {
                 write-host "`n======================================"
             
             ## Display the cluster / vApp being worked on
-                    Write-host "Cluster Name       : " -nonewline; Write-Host $Cluster      -f Green
-                    Write-Host "Resouce Pool / vApp: " -nonewline; Write-Host $ResourcePool -f Green
+                    if ($cluster) {Write-host "Cluster Name       : " -nonewline; Write-Host $Cluster      -f Green}
+                                   Write-Host "Resouce Pool / vApp: " -nonewline; Write-Host $ResourcePool -f Green
                     $script:CPU_shares = $null
                     $script:RAM_shares = $null
 
