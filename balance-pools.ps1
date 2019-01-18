@@ -1,5 +1,5 @@
 Add-PSSnapin VMware.VimAutomation.Core -ErrorAction SilentlyContinue
-
+#Connect-VIServer vCenterServer.your.local
 $Clusters = get-Cluster
 
 Function Select-size {
@@ -23,7 +23,7 @@ Function Select-size {
                     A: mAin menu`
                     Q: Quit`
                     
-            Please make a selection H/M/L/Q"
+            Please make a selection H/M/L/A/Q"
 
                     Switch ($Selection)
                         {
@@ -115,9 +115,9 @@ Function Update-all-pools {
 
             ## Get the variables I want
                     $ResourceVMs              = Get-VM -Location $ResourcePool ## All of the VMs in this pool
-                    $ResourcePoweredOnvCPUs   = ($ResourceVMs | <#Where-Object {$_.PowerState -eq "PoweredOn" } |#> Measure-Object NumCpu -Sum).Sum    ## Measures vCPUs for only powered on VMs in this pool - JK
-                    $ResourcePoweredOnvRAM    = ($ResourceVMs | <#Where-Object {$_.PowerState -eq "PoweredOn" } |#> Measure-Object MemoryMB -Sum).Sum  ## Measures Memory in MB for only powered on VMs in this pool - JK
-                    $ResourceCPUCores         = ($ResourceVMs | <#Where-Object {$_.PowerState -eq "PoweredOn" } |#> Measure-Object NumCpu -Sum).Sum    ## Measures vCPU Cores for only powered on VMs in this pool - JK
+                    $ResourcePoweredOnvCPUs   = ($ResourceVMs | <#Where-Object {$_.PowerState -eq "PoweredOn" } |#> Measure-Object NumCpu -Sum).Sum    ## Measures vCPUs for only powered on VMs in this pool
+                    $ResourcePoweredOnvRAM    = ($ResourceVMs | <#Where-Object {$_.PowerState -eq "PoweredOn" } |#> Measure-Object MemoryMB -Sum).Sum  ## Measures Memory in MB for only powered on VMs in this pool
+                    $ResourceCPUCores         = ($ResourceVMs | <#Where-Object {$_.PowerState -eq "PoweredOn" } |#> Measure-Object NumCpu -Sum).Sum    ## Measures vCPU Cores for only powered on VMs in this pool
                     $resourceCurrentCPUShares = $ResourcePool.NumCpuShares
                     $RresourceCurrentRAMShares = $ResourcePool.NumMemShares
 
@@ -172,22 +172,43 @@ Function Update-one-pool {
 
 }
 
+Function List-Resources {
+    write-host "Resource / parent cluster"
+    foreach ($Cluster in $Clusters)
+    {
+        ## Get the resource pools for this cluster, omit the hidden pool named Resources
+        $Resources  = $Cluster | Get-vApp 
+        $Resources += $Cluster | Get-resourcepool | where-object {$_.name -notlike "*Resources*"}
+
+        foreach ($Resource in $Resources)
+            {   
+                write-host -f Green $Resource.Name -NoNewline; write-host " (" -NoNewline; write-host -f Cyan $Cluster.Name -NoNewline; write-host ")"
+            }
+    }
+
+
+}
+
 
 function Main-menu {
     write-host "======================================"
     write-host -f cyan "Please make a selection."
+
     $value = read-host "
         A: Update all vApps / Resource Pools`
         O: Update one vApp  / Resource Pool`
+        L: List   all vApps / Resource Pools`
         X: Exit`
 
-    Please make a selection (A/O/X)"
+    Please make a selection (A/O/L/X)"
             Switch ($value)
                 {
                 'A' {Update-all-pools
                      Main-Menu}
                 'O' {Update-one-pool
                      main-menu}
+                'L' {List-Resources
+                    Main-menu}
                 'X' {exit}
                 default {main-menu}
                 }
