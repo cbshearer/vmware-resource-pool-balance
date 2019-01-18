@@ -1,5 +1,5 @@
 Add-PSSnapin VMware.VimAutomation.Core -ErrorAction SilentlyContinue
-#Connect-VIServer vCenterServer.your.local
+Connect-VIServer vCenterServer.your.local
 $Clusters = get-Cluster
 
 Function Select-size {
