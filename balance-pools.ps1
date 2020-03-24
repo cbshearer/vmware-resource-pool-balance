@@ -1,5 +1,9 @@
 Add-PSSnapin VMware.VimAutomation.Core -ErrorAction SilentlyContinue
-Connect-VIServer vCenterServer.your.local
+## Specify TLS 1.2
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12 
+
+## Specify your vCenter here.
+    Connect-VIServer vCenterServer.your.local
 $Clusters = get-Cluster
 
 Function Select-size {
